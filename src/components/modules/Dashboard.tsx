@@ -1,36 +1,59 @@
-// DashboardView.tsx
-import { useContext } from "react";
-import { TranslationContext } from "../../context/TranslationContext";
+import { useTranslation } from "../../context/TranslationContext";
 import KeywordForm from "../common/KeywordForm";
 
-export default function DashboardView() {
-  const { data } = useContext(TranslationContext);
-  const { keywords, translations, currentLang } = data;
+const languages = ["en", "fr", "tr", "fa"];
+
+const TranslationManagerPage = () => {
+  const {
+    translations,
+    currentLanguage,
+    setCurrentLanguage,
+    updateTranslation,
+  } = useTranslation();
+
+  const currentTranslations = translations[currentLanguage] || {};
+
+  const handleEditChange = (key, value) => {
+    updateTranslation(currentLanguage, key, value);
+  };
 
   return (
-    <div className="dashboard-view">
-      <h2>Translation Management</h2>
-      <div className="lang-selector">{currentLang}</div>
-      <div className="translation-list">
-        {keywords.map((kw) => {
-          const translated = translations[currentLang]?.[kw.id] || "";
-          const isMissing = !translated.trim();
+    <div style={{ padding: "2rem", maxWidth: 600, margin: "0 auto" }}>
+      <h2>Translation Manager</h2>
 
-          return (
-            <div className="translation-row" key={kw.id}>
-              <span className={`keyword ${isMissing ? "missing" : ""}`}>
-                {kw.text}
-              </span>
-              <input
-                className={`translation-input ${isMissing ? "missing" : ""}`}
-                value={translated}
-                readOnly
-              />
-            </div>
-          );
-        })}
-      </div>
+      <label>
+        Language:
+        <select
+          value={currentLanguage}
+          onChange={(e) => setCurrentLanguage(e.target.value)}
+        >
+          {languages.map((lang) => (
+            <option key={lang} value={lang}>
+              {lang.toUpperCase()}
+            </option>
+          ))}
+        </select>
+      </label>
+
+      <h3>Translations for: {currentLanguage.toUpperCase()}</h3>
+      <ul>
+        {Object.entries(currentTranslations).map(([key, value]) => (
+          <li key={key} style={{ marginBottom: "8px" }}>
+            <strong>{key}:</strong>{" "}
+            <input
+              type="text"
+              value={value}
+              onChange={(e) => handleEditChange(key, e.target.value)}
+            />
+          </li>
+        ))}
+      </ul>
+
+      <hr />
+
       <KeywordForm />
     </div>
   );
-}
+};
+
+export default TranslationManagerPage;

@@ -1,64 +1,61 @@
-import React, { createContext, useEffect, useState, ReactNode } from "react";
-import { loadData, saveData } from "../utils/storage";
+import { createContext, useContext, useEffect, useState } from "react";
 
-// ID generator
-const generateId = () => "_" + Math.random().toString(36).substr(2, 9);
-
-// Define types
-type Keyword = {
-  id: string;
-  text: string;
+const defaultTranslations = {
+  en: { hello: "Hello", goodbye: "Goodbye" },
+  fr: { hello: "Bonjour", goodbye: "Au revoir" },
+  tr: { hello: "Merhaba", goodbye: "Hoşça kal" },
+  fa: { hello: "سلام", goodbye: "خداحافظ" },
 };
 
-type Translations = {
-  [lang: string]: {
-    [keywordId: string]: string;
-  };
-};
+const LOCAL_STORAGE_KEY = "translations";
+const LANG_KEY = "currentLanguage";
 
-type TranslationData = {
-  keywords: Keyword[];
-  translations: Translations;
-  currentLang: string;
-};
-
-type TranslationContextType = {
-  data: TranslationData;
-  setData: React.Dispatch<React.SetStateAction<TranslationData>>;
-};
-
-// Default data
-const initialData: TranslationData = {
-  keywords: [
-    { id: generateId(), text: "hello" },
-    { id: generateId(), text: "goodbye" },
-  ],
-  translations: {
-    en: {},
-    fr: {},
-    de: {},
-  },
-  currentLang: "en",
-};
-
-// Context
-export const TranslationContext = createContext<TranslationContextType>({
-  data: initialData,
-  setData: () => {},
+const TranslationContext = createContext({
+  translations: {},
+  currentLanguage: "en",
+  updateTranslation: () => {},
+  setCurrentLanguage: () => {},
 });
 
-// Provider
-export const TranslationProvider = ({ children }: { children: ReactNode }) => {
-  const [data, setData] = useState<TranslationData>(
-    () => loadData() || initialData
-  );
+export const useTranslation = () => useContext(TranslationContext);
+
+export const TranslationProvider = ({ children }) => {
+  const [translations, setTranslations] = useState(() => {
+    const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
+    return saved ? JSON.parse(saved) : defaultTranslations;
+  });
+
+  const [currentLanguage, setCurrentLanguage] = useState(() => {
+    return localStorage.getItem(LANG_KEY) || "en";
+  });
 
   useEffect(() => {
-    saveData(data);
-  }, [data]);
+    localStorage.setItem(LOCAL_STORAGE_KEY, JSON.stringify(translations));
+  }, [translations]);
+
+  useEffect(() => {
+    localStorage.setItem(LANG_KEY, currentLanguage);
+  }, [currentLanguage]);
+
+  const updateTranslation = (lang, key, value) => {
+    setTranslations((prev) => ({
+      ...prev,
+      [lang]: {
+        ...prev[lang],
+        [key]: value,
+      },
+    }));
+  };
+
+  const contextValue = {
+    translations,
+    currentLanguage,
+    setCurrentLanguage,
+    updateTranslation,
+  };
 
   return (
-    <TranslationContext.Provider value={{ data, setData }}>
+    <TranslationContext.Provider value={contextValue}>
       {children}
     </TranslationContext.Provider>
   );
