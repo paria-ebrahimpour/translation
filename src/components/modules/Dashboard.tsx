@@ -1,15 +1,9 @@
 import React, { useState } from "react";
 import { useTranslation } from "../../context/TranslationContext";
 import { KeywordForm, LanguageSelector, TranslationList } from "../common";
+import { LANGUAGES_LIST } from "../constants/languages";
 
-const languages = [
-  { code: "en", label: "English" },
-  { code: "fr", label: "Français" },
-  { code: "tr", label: "Türkçe" },
-  { code: "fa", label: "فارسی" },
-] as const;
-
-type Language = (typeof languages)[number]["code"];
+type Language = (typeof LANGUAGES_LIST)[number]["code"];
 
 const TranslationManagerPage: React.FC = () => {
   const {
@@ -29,23 +23,23 @@ const TranslationManagerPage: React.FC = () => {
   };
 
   return (
-    <div style={{ padding: "2rem", maxWidth: 600, margin: "0 auto" }}>
-      <h2>Translation Manager</h2>
+    <div className="flex flex-col gap-3">
+      <div className="flex justify-between items-center">
+        <h1>Translation Management</h1>
 
-      <LanguageSelector
-        languages={languages}
-        selected={currentLanguage}
-        onChange={(lang) => setCurrentLanguage(lang as Language)}
-      />
-
-      <h3>Translations for: {currentLanguage.toUpperCase()}</h3>
+        <LanguageSelector
+          languages={LANGUAGES_LIST}
+          selected={currentLanguage}
+          onChange={(lang) => setCurrentLanguage(lang as Language)}
+        />
+      </div>
 
       <TranslationList
         translations={currentTranslations}
         onEdit={handleEditChange}
       />
 
-      <button onClick={() => setShowModal(true)} style={{ marginTop: "1rem" }}>
+      <button className="bg-[#3D90D7]" onClick={() => setShowModal(true)} style={{ marginTop: "1rem" }}>
         Add Keyword
       </button>
 
