@@ -1,14 +1,7 @@
 import React, { useState } from "react";
 import { useTranslation } from "../../context/TranslationContext";
 import { LanguageSelector, TranslationCard } from "../common";
-import { LanguageOption } from "../common/LanguageSelector";
-
-const languages: LanguageOption[] = [
-  { code: "en", label: "English" },
-  { code: "fr", label: "Français" },
-  { code: "tr", label: "Türkçe" },
-  { code: "fa", label: "فارسی" },
-];
+import { LANGUAGES_LIST } from "../constants/languages";
 
 const PublicViewPage: React.FC = () => {
   const { translations } = useTranslation();
@@ -29,22 +22,15 @@ const PublicViewPage: React.FC = () => {
   const currentLangData = translations[selectedLang] || {};
 
   return (
-    <div style={{ padding: "2rem", maxWidth: 600, margin: "0 auto" }}>
-      <div
-        style={{
-          display: "flex",
-          justifyContent: "space-between",
-          marginBottom: "1.5rem",
-        }}
-      >
-        <h2>Word Translations</h2>
+    <div>
+      <div className="flex justify-between items-center mb-4">
+        <h1 className="font-bold text-2xl">Word Translations</h1>
         <LanguageSelector
-          languages={languages}
+          languages={LANGUAGES_LIST}
           selected={selectedLang}
           onChange={setSelectedLang}
         />
       </div>
-
       {allKeys.map((key) => (
         <TranslationCard
           key={key}

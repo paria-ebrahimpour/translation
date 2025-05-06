@@ -10,20 +10,11 @@ const TranslationCard: React.FC<TranslationCardProps> = ({
   translation,
 }) => {
   return (
-    <div
-      style={{
-        border: "1px solid #ddd",
-        borderRadius: "8px",
-        padding: "1rem",
-        marginBottom: "1rem",
-        backgroundColor: "#fff",
-        boxShadow: "0 1px 3px rgba(0,0,0,0.05)",
-      }}
-    >
-      <div style={{ fontWeight: "bold", marginBottom: "0.5rem" }}>
-        {keyword}
+    <div className="flex flex-col items-start gap-1 border border-[#ddd] rounded-lg p-3 mb-3 bg-white shadow-sm">
+      <div className="font-bold">{keyword}</div>
+      <div className="text-start text-[#444]">
+        {translation || "No translation yet"}
       </div>
-      <div style={{ color: "#444" }}>{translation || "No translation yet"}</div>
     </div>
   );
 };

@@ -7,12 +7,15 @@ function App() {
   const [view, setView] = useState("dashboard");
 
   return (
-    <div className="container">
+    <div className="max-w-[400px] m-auto p-4 bg-white rounded-lg">
       <header>
-        <h1>Word Translation Dashboard</h1>
-        <div className="view-toggle">
-          <button onClick={() => setView("dashboard")}>Dashboard</button>
-          <button onClick={() => setView("public")}>Public View</button>
+        <div className="flex gap-2 mb-8">
+          <button className="bg-[#3A59D1]" onClick={() => setView("dashboard")}>
+            Dashboard
+          </button>
+          <button className="bg-[#3D90D7]" onClick={() => setView("public")}>
+            Public View
+          </button>
         </div>
       </header>
       {view === "dashboard" ? <Dashboard /> : <PublicView />}
