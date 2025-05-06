@@ -1,6 +1,25 @@
-import { createContext, useContext, useEffect, useState } from "react";
+import React, {
+  createContext,
+  useContext,
+  useEffect,
+  useState,
+  ReactNode,
+} from "react";
 
-const defaultTranslations = {
+interface Translations {
+  [key: string]: {
+    [key: string]: string;
+  };
+}
+
+interface TranslationContextType {
+  translations: Translations;
+  currentLanguage: string;
+  updateTranslation: (lang: string, key: string, value: string) => void;
+  setCurrentLanguage: (lang: string) => void;
+}
+
+const defaultTranslations: Translations = {
   en: { hello: "Hello", goodbye: "Goodbye" },
   fr: { hello: "Bonjour", goodbye: "Au revoir" },
   tr: { hello: "Merhaba", goodbye: "Hoşça kal" },
@@ -10,22 +29,29 @@ const defaultTranslations = {
 const LOCAL_STORAGE_KEY = "translations";
 const LANG_KEY = "currentLanguage";
 
-const TranslationContext = createContext({
+const TranslationContext = createContext<TranslationContextType>({
   translations: {},
   currentLanguage: "en",
   updateTranslation: () => {},
   setCurrentLanguage: () => {},
 });
 
-export const useTranslation = () => useContext(TranslationContext);
+export const useTranslation = (): TranslationContextType =>
+  useContext(TranslationContext);
 
-export const TranslationProvider = ({ children }) => {
-  const [translations, setTranslations] = useState(() => {
+interface TranslationProviderProps {
+  children: ReactNode;
+}
+
+export const TranslationProvider: React.FC<TranslationProviderProps> = ({
+  children,
+}) => {
+  const [translations, setTranslations] = useState<Translations>(() => {
     const saved = localStorage.getItem(LOCAL_STORAGE_KEY);
     return saved ? JSON.parse(saved) : defaultTranslations;
   });
 
-  const [currentLanguage, setCurrentLanguage] = useState(() => {
+  const [currentLanguage, setCurrentLanguage] = useState<string>(() => {
     return localStorage.getItem(LANG_KEY) || "en";
   });
 
@@ -37,7 +63,7 @@ export const TranslationProvider = ({ children }) => {
     localStorage.setItem(LANG_KEY, currentLanguage);
   }, [currentLanguage]);
 
-  const updateTranslation = (lang, key, value) => {
+  const updateTranslation = (lang: string, key: string, value: string) => {
     setTranslations((prev) => ({
       ...prev,
       [lang]: {

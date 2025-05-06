@@ -1,9 +1,17 @@
+import React, { useState } from "react";
 import { useTranslation } from "../../context/TranslationContext";
-import KeywordForm from "../common/KeywordForm";
+import { KeywordForm, LanguageSelector, TranslationList } from "../common";
 
-const languages = ["en", "fr", "tr", "fa"];
+const languages = [
+  { code: "en", label: "English" },
+  { code: "fr", label: "Français" },
+  { code: "tr", label: "Türkçe" },
+  { code: "fa", label: "فارسی" },
+] as const;
 
-const TranslationManagerPage = () => {
+type Language = (typeof languages)[number]["code"];
+
+const TranslationManagerPage: React.FC = () => {
   const {
     translations,
     currentLanguage,
@@ -11,9 +19,12 @@ const TranslationManagerPage = () => {
     updateTranslation,
   } = useTranslation();
 
-  const currentTranslations = translations[currentLanguage] || {};
+  const [showModal, setShowModal] = useState(false);
 
-  const handleEditChange = (key, value) => {
+  const currentTranslations: Record<string, string> =
+    translations[currentLanguage] || {};
+
+  const handleEditChange = (key: string, value: string) => {
     updateTranslation(currentLanguage, key, value);
   };
 
@@ -21,37 +32,24 @@ const TranslationManagerPage = () => {
     <div style={{ padding: "2rem", maxWidth: 600, margin: "0 auto" }}>
       <h2>Translation Manager</h2>
 
-      <label>
-        Language:
-        <select
-          value={currentLanguage}
-          onChange={(e) => setCurrentLanguage(e.target.value)}
-        >
-          {languages.map((lang) => (
-            <option key={lang} value={lang}>
-              {lang.toUpperCase()}
-            </option>
-          ))}
-        </select>
-      </label>
+      <LanguageSelector
+        languages={languages}
+        selected={currentLanguage}
+        onChange={(lang) => setCurrentLanguage(lang as Language)}
+      />
 
       <h3>Translations for: {currentLanguage.toUpperCase()}</h3>
-      <ul>
-        {Object.entries(currentTranslations).map(([key, value]) => (
-          <li key={key} style={{ marginBottom: "8px" }}>
-            <strong>{key}:</strong>{" "}
-            <input
-              type="text"
-              value={value}
-              onChange={(e) => handleEditChange(key, e.target.value)}
-            />
-          </li>
-        ))}
-      </ul>
 
-      <hr />
+      <TranslationList
+        translations={currentTranslations}
+        onEdit={handleEditChange}
+      />
 
-      <KeywordForm />
+      <button onClick={() => setShowModal(true)} style={{ marginTop: "1rem" }}>
+        Add Keyword
+      </button>
+
+      <KeywordForm isOpen={showModal} onClose={() => setShowModal(false)} />
     </div>
   );
 };
