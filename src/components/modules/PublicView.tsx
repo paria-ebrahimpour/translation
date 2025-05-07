@@ -7,18 +7,6 @@ const PublicViewPage: React.FC = () => {
   const { translations } = useTranslation();
   const [selectedLang, setSelectedLang] = useState("fa");
 
-  const allKeys = Object.keys(
-    Object.values(translations).reduce<Record<string, boolean>>(
-      (acc, langData) => {
-        Object.keys(langData).forEach((key) => {
-          acc[key] = true;
-        });
-        return acc;
-      },
-      {}
-    )
-  );
-
   const currentLangData = translations[selectedLang] || {};
 
   return (
@@ -31,12 +19,8 @@ const PublicViewPage: React.FC = () => {
           onChange={setSelectedLang}
         />
       </div>
-      {allKeys.map((key) => (
-        <TranslationCard
-          key={key}
-          keyword={key}
-          translation={currentLangData[key]}
-        />
+      {currentLangData.map(({ word, translation }) => (
+        <TranslationCard key={word} keyword={word} translation={translation} />
       ))}
     </div>
   );

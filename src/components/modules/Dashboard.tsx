@@ -11,15 +11,19 @@ const TranslationManagerPage: React.FC = () => {
     currentLanguage,
     setCurrentLanguage,
     updateTranslation,
+    reorderTranslations,
   } = useTranslation();
 
   const [showModal, setShowModal] = useState(false);
 
-  const currentTranslations: Record<string, string> =
-    translations[currentLanguage] || {};
+  const currentTranslations = translations[currentLanguage] || [];
 
   const handleEditChange = (key: string, value: string) => {
     updateTranslation(currentLanguage, key, value);
+  };
+
+  const handleReorder = (newOrder: typeof currentTranslations) => {
+    reorderTranslations(currentLanguage, newOrder);
   };
 
   return (
@@ -37,9 +41,14 @@ const TranslationManagerPage: React.FC = () => {
       <TranslationList
         translations={currentTranslations}
         onEdit={handleEditChange}
+        onReorder={handleReorder}
       />
 
-      <button className="bg-[#3D90D7]" onClick={() => setShowModal(true)} style={{ marginTop: "1rem" }}>
+      <button
+        className="bg-[#3D90D7] text-white px-4 py-2 rounded shadow"
+        onClick={() => setShowModal(true)}
+        style={{ marginTop: "1rem" }}
+      >
         Add Keyword
       </button>
 

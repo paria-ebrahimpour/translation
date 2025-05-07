@@ -41,7 +41,7 @@ const KeywordForm: React.FC<KeywordFormProps> = ({ isOpen, onClose }) => {
 
     setKeyword("");
     setValues({ en: "", fr: "", tr: "", fa: "" });
-    onClose(); // close modal on submit
+    onClose();
   };
 
   return (
@@ -73,9 +73,15 @@ const KeywordForm: React.FC<KeywordFormProps> = ({ isOpen, onClose }) => {
           </div>
         ))}
 
-        <div className="form-actions">
-          <button type="submit">Add / Update</button>
-          <button type="button" onClick={onClose}>
+        <div className="flex justify-center gap-2">
+          <button className="bg-[#3D90D7]" type="submit">
+            Add / Update
+          </button>
+          <button
+            className="border border-[#3D90D7] !text-[#3D90D7]"
+            type="button"
+            onClick={onClose}
+          >
             Cancel
           </button>
         </div>

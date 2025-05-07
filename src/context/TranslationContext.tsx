@@ -6,24 +6,40 @@ import React, {
   ReactNode,
 } from "react";
 
-interface Translations {
-  [key: string]: {
-    [key: string]: string;
-  };
-}
+export type TranslationEntry = {
+  word: string;
+  translation: string;
+};
+
+export type Translations = {
+  [lang: string]: TranslationEntry[];
+};
 
 interface TranslationContextType {
   translations: Translations;
   currentLanguage: string;
-  updateTranslation: (lang: string, key: string, value: string) => void;
   setCurrentLanguage: (lang: string) => void;
+  updateTranslation: (lang: string, key: string, value: string) => void;
+  reorderTranslations: (lang: string, newOrder: TranslationEntry[]) => void;
 }
 
 const defaultTranslations: Translations = {
-  en: { hello: "Hello", goodbye: "Goodbye" },
-  fr: { hello: "Bonjour", goodbye: "Au revoir" },
-  tr: { hello: "Merhaba", goodbye: "Hoşça kal" },
-  fa: { hello: "سلام", goodbye: "خداحافظ" },
+  en: [
+    { word: "hello", translation: "Hello" },
+    { word: "goodbye", translation: "Goodbye" },
+  ],
+  fr: [
+    { word: "hello", translation: "Bonjour" },
+    { word: "goodbye", translation: "Au revoir" },
+  ],
+  tr: [
+    { word: "hello", translation: "Merhaba" },
+    { word: "goodbye", translation: "Hoşça kal" },
+  ],
+  fa: [
+    { word: "hello", translation: "سلام" },
+    { word: "goodbye", translation: "خداحافظ" },
+  ],
 };
 
 const LOCAL_STORAGE_KEY = "translations";
@@ -32,12 +48,12 @@ const LANG_KEY = "currentLanguage";
 const TranslationContext = createContext<TranslationContextType>({
   translations: {},
   currentLanguage: "en",
-  updateTranslation: () => {},
   setCurrentLanguage: () => {},
+  updateTranslation: () => {},
+  reorderTranslations: () => {},
 });
 
-export const useTranslation = (): TranslationContextType =>
-  useContext(TranslationContext);
+export const useTranslation = () => useContext(TranslationContext);
 
 interface TranslationProviderProps {
   children: ReactNode;
@@ -64,24 +80,55 @@ export const TranslationProvider: React.FC<TranslationProviderProps> = ({
   }, [currentLanguage]);
 
   const updateTranslation = (lang: string, key: string, value: string) => {
+    setTranslations((prev) => {
+      const newTranslations: Translations = { ...prev };
+
+      // Loop through all languages
+      Object.keys(prev).forEach((languageKey) => {
+        const existingEntry = prev[languageKey].find(
+          (entry) => entry.word === key
+        );
+
+        if (existingEntry) {
+          // Update the translation if it matches the given language
+          if (languageKey === lang) {
+            newTranslations[languageKey] = prev[languageKey].map((entry) =>
+              entry.word === key ? { ...entry, translation: value } : entry
+            );
+          }
+        } else {
+          // Add entry — if current language, use provided value, else use null
+          newTranslations[languageKey] = [
+            ...prev[languageKey],
+            {
+              word: key,
+              translation: languageKey === lang ? value : (null as any),
+            },
+          ];
+        }
+      });
+
+      return newTranslations;
+    });
+  };
+
+  const reorderTranslations = (lang: string, newOrder: TranslationEntry[]) => {
     setTranslations((prev) => ({
       ...prev,
-      [lang]: {
-        ...prev[lang],
-        [key]: value,
-      },
+      [lang]: newOrder,
     }));
   };
 
-  const contextValue = {
-    translations,
-    currentLanguage,
-    setCurrentLanguage,
-    updateTranslation,
-  };
-
   return (
-    <TranslationContext.Provider value={contextValue}>
+    <TranslationContext.Provider
+      value={{
+        translations,
+        currentLanguage,
+        setCurrentLanguage,
+        updateTranslation,
+        reorderTranslations,
+      }}
+    >
       {children}
     </TranslationContext.Provider>
   );
