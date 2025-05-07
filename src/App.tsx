@@ -1,6 +1,6 @@
 import { useState } from "react";
-import Dashboard from "./components/modules/Dashboard";
 import PublicView from "./components/modules/PublicView";
+import TranslationManagerView from "./components/modules/TranslationManagerView";
 
 function App() {
   const [view, setView] = useState<"public" | "dashboard">("dashboard");
@@ -17,7 +17,7 @@ function App() {
           </button>
         </div>
       </header>
-      {view === "dashboard" ? <Dashboard /> : <PublicView />}
+      {view === "dashboard" ? <TranslationManagerView /> : <PublicView />}
     </div>
   );
 }

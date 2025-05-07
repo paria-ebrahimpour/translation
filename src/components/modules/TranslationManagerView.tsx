@@ -5,7 +5,7 @@ import { LANGUAGES_LIST } from "../constants/languages";
 
 type Language = (typeof LANGUAGES_LIST)[number]["code"];
 
-const TranslationManagerPage: React.FC = () => {
+const TranslationManagerView: React.FC = () => {
   const {
     translations,
     currentLanguage,
@@ -57,4 +57,4 @@ const TranslationManagerPage: React.FC = () => {
   );
 };
 
-export default TranslationManagerPage;
+export default TranslationManagerView;

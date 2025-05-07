@@ -3,7 +3,7 @@ import { useTranslation } from "../../context/TranslationContext";
 import { LanguageSelector, TranslationCard } from "../common";
 import { LANGUAGES_LIST } from "../constants/languages";
 
-const PublicViewPage: React.FC = () => {
+const PublicView: React.FC = () => {
   const { translations } = useTranslation();
   const [selectedLang, setSelectedLang] = useState("fa");
 
@@ -26,4 +26,4 @@ const PublicViewPage: React.FC = () => {
   );
 };
 
-export default PublicViewPage;
+export default PublicView;
